@@ -1,3 +1,6 @@
 *.pro
 *.o
 *.exe
+
+00_commandLineParse
+Makefile
