@@ -4,12 +4,37 @@
 using std::cout;
 using std::endl;
 
+struct CommandLineArguments
+{
+	bool    verbose;
+	QString outputFileName;
+};
+
+CommandLineArguments parseProgramArguments(
+		QCoreApplication &app);
+
 int main(int argc, char* argv[])
 {
 	QCoreApplication app(argc, argv);
 	QCoreApplication::setApplicationName("Command-Parse");
 	QCoreApplication::setApplicationVersion("0.0.0");
 	
+	const CommandLineArguments programArgs =
+			parseProgramArguments(app);
+	
+	cout << "Verbose: " << programArgs.verbose << '\n'
+			<< "Output File Name: "
+			<< (programArgs.outputFileName.isNull() ?
+					"(Not set)" :
+					programArgs.outputFileName.toStdString())
+			<< endl;
+	
+	return 0;
+}
+
+CommandLineArguments parseProgramArguments(
+		QCoreApplication &app)
+{
 	QCommandLineOption verboseOption("verbose",
 			"Output more information.");
 	QCommandLineOption outputFileOption(
@@ -26,12 +51,8 @@ int main(int argc, char* argv[])
 	
 	parser.process(app);
 	
-	bool verboseSet = parser.isSet(verboseOption);
-	QString outputFileName = parser.value(outputFileOption);
-	
-	cout << "Verbose: " << verboseSet << '\n'
-			<< "Output File Name: " << (outputFileName.isNull() ?
-					"(Not set)" : outputFileName.toStdString()) << endl;
-	
-	return 0;
+	CommandLineArguments arguments;
+	arguments.verbose = parser.isSet(verboseOption);
+	arguments.outputFileName = parser.value(outputFileOption);
+	return arguments;
 }
